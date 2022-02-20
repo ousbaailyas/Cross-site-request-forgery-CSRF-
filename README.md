@@ -23,9 +23,9 @@ email=wiener@normal-user.com
 ```
 
 This meets the conditions required for CSRF:
-- ** The action of changing the email address on a user's account is of interest to an attacker. Following this action, the attacker will typically be able to trigger a password reset and take full control of the user's account.
-- ** The application uses a session cookie to identify which user issued the request. There are no other tokens or mechanisms in place to track user sessions.
-- ** The attacker can easily determine the values of the request parameters that are needed to perform the action.
+-  The action of changing the email address on a user's account is of interest to an attacker. Following this action, the attacker will typically be able to trigger a password reset and take full control of the user's account.
+-  The application uses a session cookie to identify which user issued the request. There are no other tokens or mechanisms in place to track user sessions.
+-  The attacker can easily determine the values of the request parameters that are needed to perform the action.
 
 With these conditions in place, the attacker can construct a web page containing the following HTML:
 
@@ -43,17 +43,17 @@ With these conditions in place, the attacker can construct a web page containing
 ```
 
 If a victim user visits the attacker's web page, the following will happen:
-- ** The attacker's page will trigger an HTTP request to the vulnerable web site.
-- ** If the user is logged in to the vulnerable web site, their browser will automatically include their session cookie in the request (assuming SameSite cookies are not being used).
-- ** The vulnerable web site will process the request in the normal way, treat it as having been made by the victim user, and change their email address.
+-  The attacker's page will trigger an HTTP request to the vulnerable web site.
+-  If the user is logged in to the vulnerable web site, their browser will automatically include their session cookie in the request (assuming SameSite cookies are not being used).
+-  The vulnerable web site will process the request in the normal way, treat it as having been made by the victim user, and change their email address.
 
 ## How to construct a CSRF attack
 Manually creating the HTML needed for a CSRF exploit can be cumbersome, particularly where the desired request contains a large number of parameters, or there are other quirks in the request. The easiest way to construct a CSRF exploit is using the CSRF PoC generator that is built in to Burp Suite Professional:
-- ** Select a request anywhere in Burp Suite Professional that you want to test or exploit.
-- ** From the right-click context menu, select Engagement tools / Generate CSRF PoC.
-- ** Burp Suite will generate some HTML that will trigger the selected request (minus cookies, which will be added automatically by the victim's browser).
-- ** You can tweak various options in the CSRF PoC generator to fine-tune aspects of the attack. You might need to do this in some unusual situations to deal with quirky features of requests.
-- ** Copy the generated HTML into a web page, view it in a browser that is logged in to the vulnerable web site, and test whether the intended request is issued successfully and the desired action occurs.
+-  Select a request anywhere in Burp Suite Professional that you want to test or exploit.
+-  From the right-click context menu, select Engagement tools / Generate CSRF PoC.
+-  Burp Suite will generate some HTML that will trigger the selected request (minus cookies, which will be added automatically by the victim's browser).
+-  You can tweak various options in the CSRF PoC generator to fine-tune aspects of the attack. You might need to do this in some unusual situations to deal with quirky features of requests.
+-  Copy the generated HTML into a web page, view it in a browser that is logged in to the vulnerable web site, and test whether the intended request is issued successfully and the desired action occurs.
 
 ## How to deliver a CSRF exploit
 The delivery mechanisms for cross-site request forgery attacks are essentially the same as for reflected XSS. Typically, the attacker will place the malicious HTML onto a web site that they control, and then induce victims to visit that web site. This might be done by feeding the user a link to the web site, via an email or social media message. Or if the attack is placed into a popular web site (for example, in a user comment), they might just wait for users to visit the web site.
@@ -66,9 +66,9 @@ Note that some simple CSRF exploits employ the GET method and can be fully self-
 
 ## Preventing CSRF attacks
 The most robust way to defend against CSRF attacks is to include a CSRF token within relevant requests. The token should be:
-- ** Unpredictable with high entropy, as for session tokens in general.
-- ** Tied to the user's session.
-- ** trictly validated in every case before the relevant action is executed.
+-  Unpredictable with high entropy, as for session tokens in general.
+-  Tied to the user's session.
+-  trictly validated in every case before the relevant action is executed.
 
 An additional defense that is partially effective against CSRF, and can be used in conjunction with CSRF tokens, is SameSite cookies.
 
@@ -91,13 +91,13 @@ If the SameSite attribute is set to Strict, then the browser will not include th
 
 If the SameSite attribute is set to Lax, then the browser will include the cookie in requests that originate from another site but only if two conditions are met:
 
-- ** The request uses the GET method. Requests with other methods, such as POST, will not include the cookie.
-- ** The request resulted from a top-level navigation by the user, such as clicking a link. Other requests, such as those initiated by scripts, will not include the cookie.
+-  The request uses the GET method. Requests with other methods, such as POST, will not include the cookie.
+-  The request resulted from a top-level navigation by the user, such as clicking a link. Other requests, such as those initiated by scripts, will not include the cookie.
 
 Using SameSite cookies in Lax mode does then provide a partial defense against CSRF attacks, because user actions that are targets for CSRF attacks are often implemented using the POST method. Two important caveats here are:
 
-- ** Some applications do implement sensitive actions using GET requests.
-- ** Many applications and frameworks are tolerant of different HTTP methods. In this situation, even if the application itself employs the POST method by design, it will in fact accept requests that are switched to use the GET method.
+-  Some applications do implement sensitive actions using GET requests.
+-  Many applications and frameworks are tolerant of different HTTP methods. In this situation, even if the application itself employs the POST method by design, it will in fact accept requests that are switched to use the GET method.
 
 For the reasons described, it is not recommended to rely solely on SameSite cookies as a defense against CSRF attacks. Used in conjunction with CSRF tokens, however, SameSite cookies can provide an additional layer of defense that might mitigate any defects in the token-based defenses.
 
@@ -115,6 +115,7 @@ Cookie: session=2yQIDcpia41WrATfjPqvm9tOkDvkMvLm
 csrf=WfF1szMUHhiokx9AHFply5L2xAOfjRkE&email=wiener@normal-user.com
 ```
 This ought to prevent CSRF attacks because it violates the necessary conditions for a CSRF vulnerability: the application no longer relies solely on cookies for session handling, and the request contains a parameter whose value an attacker cannot determine. However, there are various ways in which the defense can be broken, meaning that the application is still vulnerable to CSRF.
+
 ## Validation of CSRF token depends on request method
 Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
 In this situation, the attacker can switch to the GET method to bypass the validation and deliver a CSRF attack:
