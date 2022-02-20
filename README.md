@@ -60,7 +60,7 @@ The delivery mechanisms for cross-site request forgery attacks are essentially t
 
 Note that some simple CSRF exploits employ the GET method and can be fully self-contained with a single URL on the vulnerable web site. In this situation, the attacker may not need to employ an external site, and can directly feed victims a malicious URL on the vulnerable domain. In the preceding example, if the request to change email address can be performed with the GET method, then a self-contained attack would look like this:
 
-````
+```
 <img src="https://vulnerable-website.com/email/change?email=pwned@evil-user.net">
 ```
 
@@ -105,7 +105,7 @@ For the reasons described, it is not recommended to rely solely on SameSite cook
 Most interesting CSRF vulnerabilities arise due to mistakes made in the validation of CSRF tokens.
 In the previous example, suppose that the application now includes a CSRF token within the request to change the user's e-mail:
 
-````
+```
 POST /email/change HTTP/1.1
 Host: vulnerable-website.com
 Content-Type: application/x-www-form-urlencoded
@@ -113,7 +113,7 @@ Content-Length: 68
 Cookie: session=2yQIDcpia41WrATfjPqvm9tOkDvkMvLm
 
 csrf=WfF1szMUHhiokx9AHFply5L2xAOfjRkE&email=wiener@normal-user.com
-````
+```
 This ought to prevent CSRF attacks because it violates the necessary conditions for a CSRF vulnerability: the application no longer relies solely on cookies for session handling, and the request contains a parameter whose value an attacker cannot determine. However, there are various ways in which the defense can be broken, meaning that the application is still vulnerable to CSRF.
 ## Validation of CSRF token depends on request method
 Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
